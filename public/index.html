@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso - Portal de Maestros</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem 1rem;
+    }
+
+    .card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+      padding: 2.5rem 2rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      background: #2563eb;
+      color: white;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.4rem;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .header h1 {
+      font-size: 1.65rem;
+      color: #0f172a;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .header p {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 0.35rem;
+    }
+
+    .selector-tab {
+      display: flex;
+      background-color: #f1f5f9;
+      padding: 4px;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.65rem;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #64748b;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: #ffffff;
+      color: #2563eb;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    form {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-group {
+      margin-bottom: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-group label {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s ease;
+      background-color: #fff;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 0.75rem;
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.2rem;
+    }
+
+    .toggle-password:hover {
+      color: #0f172a;
+    }
+
+    .btn-submit {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.8rem;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-submit:hover {
+      background-color: #1d4ed8;
+    }
+
+    .btn-submit:disabled {
+      background-color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .feedback-msg {
+      margin-top: 1.25rem;
+      padding: 0.65rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+
+    .feedback-msg.error {
+      display: block;
+      background-color: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .feedback-msg.success {
+      display: block;
+      background-color: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="header">
+      <div class="brand-icon">M</div>
+      <h1>Portal de Maestros</h1>
+      <p>Conectando especialistas y contratistas</p>
+    </div>
+
+    <!-- Pestañas -->
+    <div class="selector-tab">
+      <button id="btn-tab-login" class="tab-btn active" onclick="cambiarModo('login')">Iniciar Sesión</button>
+      <button id="btn-tab-registro" class="tab-btn" onclick="cambiarModo('registro')">Crear Cuenta</button>
+    </div>
+
+    <!-- 1. INICIAR SESIÓ N -->
+    <form id="form-login">
+      <div class="form-group">
+        <label for="login-email">Correo Electrónico</label>
+        <input type="email" id="login-email" placeholder="ejemplo@correo.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">Contraseña</label>
+        <div class="input-wrapper">
+          <input type="password" id="login-password" placeholder="••••••••" required>
+          <button type="button" class="toggle-password" onclick="toggleVisibilidad('login-password', this)">Ver</button>
+        </div>
+      </div>
+
+      <button type="submit" id="btn-login" class="btn-submit">
+        <span>Ingresar a la Plataforma</span>
+      </button>
+    </form>
+
+    <!-- 2. CREAR CUENTA -->
+    <form id="form-registro" class="hidden">
+      <div class="form-group">
+        <label for="reg-rol">Tipo de Cuenta</label>
+        <select id="reg-rol" onchange="adaptarFormularioRol()">
+          <option value="MAESTRO">Maestro / Especialista</option>
+          <option value="EMPRESA">Empresa / Contratista</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-nombre" for="reg-nombre">Nombre Completo</label>
+        <input type="text" id="reg-nombre" placeholder="Ej: Juan Pérez" required>
+      </div>
+
+      <!-- Campo condicional para RUT (Solo Empresa) -->
+      <div class="form-group hidden" id="group-rut">
+        <label for="reg-rut">RUT Empresa</label>
+        <input type="text" id="reg-rut" placeholder="Ej: 76.123.456-7">
+      </div>
+
+      <!-- Campo condicional para Especialidad (Solo Maestro) -->
+      <div class="form-group" id="group-especialidad">
+        <label for="reg-especialidad">Especialidad Principal</label>
+        <select id="reg-especialidad">
+          <option value="General">Construcción General</option>
+          <option value="Electricidad">Electricidad</option>
+          <option value="Gasfitería">Gasfitería / Plomería</option>
+          <option value="Carpintería">Carpintería</option>
+          <option value="Pintura">Pintura y Acabados</option>
+        </select>
+      </div>
+
+      <!-- Campo opcional Teléfono (Solo Maestro) -->
+      <div class="form-group" id="group-telefono">
+        <label for="reg-telefono">Teléfono de Contacto</label>
+        <input type="tel" id="reg-telefono" placeholder="Ej: +56 9 1234 5678">
+      </div>
+
+      <div class="form-group">
+        <label for="reg-email">Correo Electrónico</label>
+        <input type="email" id="reg-email" placeholder="ejemplo@correo.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-password">Contraseña</label>
+        <div class="input-wrapper">
+          <input type="password" id="reg-password" placeholder="••••••••" required>
+          <button type="button" class="toggle-password" onclick="toggleVisibilidad('reg-password', this)">Ver</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-ciudad">Ciudad / Ubicación</label>
+        <input type="text" id="reg-ciudad" placeholder="Ej: Concepción">
+      </div>
+
+      <button type="submit" id="btn-registro" class="btn-submit">
+        <span>Crear Cuenta</span>
+      </button>
+    </form>
+
+    <div id="feedback" class="feedback-msg"></div>
+  </div>
+
+  <script>
+    const API_URL = 'http://127.0.0.1:3000/api';
+
+    function cambiarModo(modo) {
+      const fLogin = document.getElementById('form-login');
+      const fRegistro = document.getElementById('form-registro');
+      const tLogin = document.getElementById('btn-tab-login');
+      const tRegistro = document.getElementById('btn-tab-registro');
+      ocultarMensaje();
+
+      if (modo === 'login') {
+        fLogin.classList.remove('hidden');
+        fRegistro.classList.add('hidden');
+        tLogin.classList.add('active');
+        tRegistro.classList.remove('active');
+      } else {
+        fLogin.classList.add('hidden');
+        fRegistro.classList.remove('hidden');
+        tLogin.classList.remove('active');
+        tRegistro.classList.add('active');
+      }
+    }
+
+    function toggleVisibilidad(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Ocultar';
+      } else {
+        input.type = 'password';
+        btn.textContent = 'Ver';
+      }
+    }
+
+    function adaptarFormularioRol() {
+      const rol = document.getElementById('reg-rol').value;
+      const lblNombre = document.getElementById('lbl-nombre');
+      const inputNombre = document.getElementById('reg-nombre');
+      const groupRut = document.getElementById('group-rut');
+      const groupEspecialidad = document.getElementById('group-especialidad');
+      const groupTelefono = document.getElementById('group-telefono');
+
+      if (rol === 'EMPRESA') {
+        lblNombre.textContent = 'Nombre de la Empresa / Razón Social';
+        inputNombre.placeholder = 'Ej: Constructora SpA';
+        groupRut.classList.remove('hidden');
+        groupEspecialidad.classList.add('hidden');
+        groupTelefono.classList.add('hidden');
+      } else {
+        lblNombre.textContent = 'Nombre Completo';
+        inputNombre.placeholder = 'Ej: Juan Pérez';
+        groupRut.classList.add('hidden');
+        groupEspecialidad.classList.remove('hidden');
+        groupTelefono.classList.remove('hidden');
+      }
+    }
+
+    function mostrarMensaje(texto, esError = false) {
+      const feedback = document.getElementById('feedback');
+      feedback.textContent = texto;
+      feedback.className = `feedback-msg ${esError ? 'error' : 'success'}`;
+    }
+
+    function ocultarMensaje() {
+      const feedback = document.getElementById('feedback');
+      feedback.className = 'feedback-msg';
+      feedback.textContent = '';
+    }
+
+    // Submit Login
+    document.getElementById('form-login').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      ocultarMensaje();
+      
+      const btn = document.getElementById('btn-login');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'Cargando...';
+
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const res = await fetch(`${API_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const msg = await res.text();
+        if (res.ok) {
+          mostrarMensaje(msg, false);
+        } else {
+          mostrarMensaje(msg, true);
+        }
+      } catch (err) {
+        mostrarMensaje('Error al conectar con el servidor backend.', true);
+      } finally {
+        btn.disabled = false;
+        btn.querySelector('span').textContent = 'Ingresar a la Plataforma';
+      }
+    });
+
+    // Submit Registro
+    document.getElementById('form-registro').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      ocultarMensaje();
+
+      const btn = document.getElementById('btn-registro');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'Registrando...';
+
+      const rol = document.getElementById('reg-rol').value;
+
+      const payload = {
+        email: document.getElementById('reg-email').value,
+        password: document.getElementById('reg-password').value,
+        rol: rol,
+        nombre_o_razonsocial: document.getElementById('reg-nombre').value,
+        ciudad: document.getElementById('reg-ciudad').value || null,
+        rut: rol === 'EMPRESA' ? (document.getElementById('reg-rut').value || null) : null,
+        telefono: rol === 'MAESTRO' ? (document.getElementById('reg-telefono').value || null) : null,
+        especialidad: rol === 'MAESTRO' ? document.getElementById('reg-especialidad').value : null
+      };
+
+      try {
+        const res = await fetch(`${API_URL}/registro`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const msg = await res.text();
+        if (res.ok) {
+          mostrarMensaje('¡Cuenta creada exitosamente! Redirigiendo...', false);
+          setTimeout(() => cambiarModo('login'), 1500);
+        } else {
+          mostrarMensaje(msg, true);
+        }
+      } catch (err) {
+        mostrarMensaje('Error al conectar con el servidor backend.', true);
+      } finally {
+        btn.disabled = false;
+        btn.querySelector('span').textContent = 'Crear Cuenta';
+      }
+    });
+  </script>
+</body>
+</html>
